@@ -8,6 +8,8 @@ Open source LLM projects
 
 `alife_llm.py`: Digital creatures (ALIFE creatures) evolved using LLMs
 
+![Animation](wavefront_animation.gif)
+
 
 ## Installation
 
