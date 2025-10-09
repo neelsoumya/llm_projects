@@ -10,6 +10,8 @@ Open source LLM projects
 
 ![Animation](wavefront_animation.gif)
 
+`llm_agent_currents.py`: LLM generated code that creates currents in superconductors.
+
 
 ## Installation
 
