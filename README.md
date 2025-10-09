@@ -12,6 +12,7 @@ Open source LLM projects
 
 `llm_agent_currents.py`: LLM generated code that creates currents in superconductors.
 
+![Animation](superconducting_life.gif)
 
 ## Installation
 
