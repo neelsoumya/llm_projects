@@ -4,6 +4,8 @@ Open source LLM projects
 
 ## Files
 
+`mental_health_chatbot.py`: A mental health chatbot using OpenAI's model.
+
 `simple_llm_github.py`: A simple LLM to call models.github.api/inference
 
 `alife_llm.py`: Digital creatures (ALIFE creatures) evolved using LLMs
