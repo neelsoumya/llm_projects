@@ -26,7 +26,9 @@ pip install -r requirements.txt
 ## Steps
 
 ```bash
-source .venv/bin/activate
+python -m venv llm_venv
+
+source llm_venv/bin/activate
 
 pip install -r requirements.txt
 
