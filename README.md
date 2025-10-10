@@ -34,7 +34,11 @@ source llm_venv/bin/activate
 
 pip install -r requirements.txt
 
+python mental_health_chatbot.py
+
 python alife_llm.py
+
+deactivate
 
 ```
 
