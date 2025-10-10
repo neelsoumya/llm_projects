@@ -14,6 +14,8 @@ Open source LLM projects
 
 ![Animation](superconducting_life.gif)
 
+![Scifi generated image of life in liquid helium](scifi_image.png)
+
 ## Installation
 
 ```bash
