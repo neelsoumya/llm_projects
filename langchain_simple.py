@@ -10,9 +10,11 @@ import dotenv
 dotenv.load_dotenv()
 
 # initialize the ChatOpenAI model
-llm = ChatOpenAI()
+llm = ChatOpenAI(model="gpt-4o", temperature=0)
 
-# llm_response = llm.g
+# TODO: Add your LangChain code here
+#.  https://python.langchain.com/docs/integrations/chat/openai/
 
-#print(llm_response)
-
+# invoke the model with a prompt
+response = llm.invoke("Hello, how are you?")
+print(response)
