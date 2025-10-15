@@ -4,6 +4,8 @@ Open source LLM projects
 
 ## Files
 
+`.venv`: Create this file and save your OpenAI API key here. Add `.env` to your `.gitignore` file.
+
 `langchain_simple.py`: A simple example of using `LangChain`
 
 `mental_health_chatbot.py`: A mental health chatbot using OpenAI's model.
@@ -41,8 +43,8 @@ python mental_health_chatbot.py
 python alife_llm.py
 
 deactivate
-
 ```
+
 
 ## Contact
 

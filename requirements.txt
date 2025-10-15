@@ -8,3 +8,5 @@ python-dotenv
 langchain
 langchain-openai
 langgraph
+pydantic
+
