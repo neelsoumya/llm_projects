@@ -18,6 +18,31 @@ OPENAI_API_KEY = <yourkey>
 
 * Install Python
 
+<!--
+## Installation
+
+```bash
+
+pip install -r requirements.txt
+```
+-->
+
+## Steps
+
+```bash
+python -m venv llm_venv
+
+source llm_venv/bin/activate
+
+pip install -r requirements.txt
+
+python mental_health_chatbot.py
+
+python alife_llm.py
+
+deactivate
+```
+
 
 ## Files
 
@@ -39,28 +64,6 @@ OPENAI_API_KEY = <yourkey>
 
 ![Scifi generated image of life in liquid helium](scifi_image.png)
 
-## Installation
-
-```bash
-
-pip install -r requirements.txt
-```
-
-## Steps
-
-```bash
-python -m venv llm_venv
-
-source llm_venv/bin/activate
-
-pip install -r requirements.txt
-
-python mental_health_chatbot.py
-
-python alife_llm.py
-
-deactivate
-```
 
 
 ## Contact
