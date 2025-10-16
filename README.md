@@ -2,6 +2,23 @@
 
 Open source LLM projects
 
+## Setup
+
+* Create a `.env` file and store your OpenAI API key in it. It should have the format
+
+```bash
+OPENAI_API_KEY = <yourkey>
+```
+
+* Create a `.gitignore` file. It should have the following contents
+
+```bash
+.env
+```
+
+* Install Python
+
+
 ## Files
 
 `.venv`: Create this file and save your OpenAI API key here. Add `.env` to your `.gitignore` file.
