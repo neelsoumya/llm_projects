@@ -54,6 +54,9 @@ deactivate
 
 `simple_llm_github.py`: A simple LLM to call models.github.api/inference
 
+
+`reflection_chart_generate.ipynb`: Multi agent system with reflection to create charts and refine it.
+
 `alife_llm.py`: Digital creatures (ALIFE creatures) evolved using LLMs
 
 ![Animation](wavefront_animation.gif)
