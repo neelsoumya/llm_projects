@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import torch.nn as nn
-import torch.functional as F
+import torch.nn.functional as F
 import torch.optim as optim
 from datasets import load_dataset
 from diffusers import DDPMScheduler, UNet2DModel
@@ -126,13 +126,13 @@ def train(model: UNet2DModel,
             optimizer.zero_grad() # reset gradients
 
 # training
-#train(model = model,
-#      train_loader = train_loader,
-#      optimizer = optimizer,
-#      noise_scheduler = noise_scheduler,
-#      lr_scheduler = lr_scheduler,
-#      epochs = 3
-#      )
+train(model = model,
+      train_loader = train_loader,
+      optimizer = optimizer,
+      noise_scheduler = noise_scheduler,
+      lr_scheduler = lr_scheduler,
+      epochs = 3
+      )
              
 
 
