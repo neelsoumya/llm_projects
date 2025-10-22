@@ -1,0 +1,148 @@
+'''
+Simple diffusion model implementation using Hugging Face's diffusers library.
+Acknowledgements: Adapted from [Accelerate resources](https://docs.science.ai.cam.ac.uk/diffusion-models/DDPM/6_hf_diffusers/)
+'''
+
+import matplotlib.pyplot as plt
+import numpy as np
+import torch
+import torch.nn as nn
+import torch.functional as F
+import torch.optim as optim
+from datasets import load_dataset
+from diffusers import DDPMScheduler, UNet2DModel
+from diffusers.optimization import get_cosine_schedule_with_warmup
+
+from torch.utils.data import DataLoader, Dataset
+from torchvision import datasets, transforms
+from tqdm import tqdm
+
+# define model
+model = UNet2DModel(sample_size=28,        # 28 x 28 input images
+                    in_channels=1,         # 1 channel (grayscale)
+                    out_channels=1,        # 1 channel (output)
+                    layers_per_block=1,    # 1 layer per block
+                    block_out_channels=(4, 8, 16), # 3 blocks with 4, 8 and 16 channels
+                    down_block_types=(
+                        "DownBlock2D",   # a resnet block
+                        "DownBlock2D",   # a resnet block
+                        "DownBlock2D"    # a resnet block      
+                                     ),
+                    up_block_types=(
+                        "UpBlock2D",     # up sampling block
+                        "UpBlock2D",     # up sampling block
+                        "UpBlock2D"      # up sampling block
+                                   ),
+                    num_class_embeds=10, # 10 class embeddings for 10 digits
+                    norm_num_groups=2    # 2 groups for nromalization                  
+                    )
+
+print(model)
+
+# Load dataset
+# dataset = datasets.load_dataset("mnist")
+transform = transforms.Compose([transforms.ToTensor(),
+                               transforms.Normalize( (0.5,), (0.5,) ) 
+                               ] 
+                               )
+
+# mnist_data = datasets.MNIST(root="./data", train=True, download=True, transform=transform)  
+train_dataset = datasets.MNIST(root="./data", train=True, download=True, transform=transform)
+test_dataset  = datasets.MNIST(root="./data", train=False, download=True, transform=transform)
+
+train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+test_loader  = DataLoader(test_dataset,  batch_size=32, shuffle=False)
+
+
+# Initialize the noise scheduler
+#.    in the notes this is called beta
+noise_scheduler = DDPMScheduler(num_train_timesteps = 200,
+                                beta_start = 0.0001, # starting covariance
+                                beta_end = 0.02, 
+                                beta_schedule = 'linear',
+                                prediction_type = 'epsilon' # predict noise
+)
+
+optimizer = torch.optim.AdamW( model.parameters(),
+                               lr = 1e-3
+                             )
+
+num_train_steps = len(train_loader) * 3
+
+# you need cosine similarity to compare how "close" image is to text
+lr_scheduler = get_cosine_schedule_with_warmup( optimizer = optimizer,
+                                                num_warmup_steps = 50,
+                                                num_training_steps = (num_train_steps),
+                                               )
+
+# Train the model
+def train(model: UNet2DModel,
+          train_loader: DataLoader,
+          optimizer: optim.Optimizer,
+          noise_scheduler: DDPMScheduler,
+          lr_scheduler,
+          epochs: int,
+          ):
+  
+    # train loop
+    for epoch in range(epochs):
+        model.train()
+
+        for i, (clean_images, labels) in tqdm(enumerate(train_loader)):
+            
+            # geneate random noise?
+            # actual REAL noise
+            noise = torch.rand(clean_images.shape)
+
+            bs = clean_images.shape[0]
+
+            # what labels are these?
+            labels = labels
+
+            
+            # add noise to the images according to the noise magnitude at each timestep
+            timesteps = torch.randint(0, 
+                                      noise_scheduler.num_train_timesteps,
+                                      (bs,),
+                                      device = clean_images.device
+                                      ).long()
+            
+            # noise the images
+            noisy_images = noise_scheduler.add_noise(clean_images, noise, timesteps)
+            
+            # predict the noise residual
+            noise_pred = model(noisy_images, timesteps, labels, return_dict=False)[0]
+
+            # loss between the predicted noise and the true noise
+            loss = F.mse_loss(noise_pred, noise)
+
+            # backpropagation
+            loss.backward()
+
+            optimizer.step() # update weights
+
+            lr_scheduler.step() # update learning rate
+
+            optimizer.zero_grad() # reset gradients
+
+# training
+#train(model = model,
+#      train_loader = train_loader,
+#      optimizer = optimizer,
+#      noise_scheduler = noise_scheduler,
+#      lr_scheduler = lr_scheduler,
+#      epochs = 3
+#      )
+             
+
+
+
+
+
+
+
+
+
+
+
+  

@@ -36,6 +36,10 @@ source llm_venv/bin/activate
 
 pip install -r requirements.txt
 
+python -m venv diffusion_venv
+
+pip install -r requirements_diffusion.txt
+
 python mental_health_chatbot.py
 
 python alife_llm.py
@@ -56,6 +60,8 @@ deactivate
 
 
 `reflection_chart_generate.ipynb`: Multi agent system with reflection to create charts and refine it.
+
+`diffusion_huggingface.py`: Python script to implement diffusion models for image generation using Hugging Face
 
 `alife_llm.py`: Digital creatures (ALIFE creatures) evolved using LLMs
 
