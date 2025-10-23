@@ -137,6 +137,39 @@ train(model = model,
 
 
 
+# sample from the model
+def sample(model: UNet2DModel,
+           scheduler: DDPMScheduler,
+           batch_size: int,
+           generator: torch._C.Generator,
+           num_inference_steps: int,
+           label: int,
+) -> np.ndarray:
+    
+    ''' Generate samples from the diffusion model 
+    Args:
+        model (UNet2DModel): trained diffusion model
+        scheduler (DDPMScheduler): noise scheduler
+        batch_size (int): number of images to generate
+        generator (torch.Generator): random generator for reproducibility
+        num_inference_steps (int): number of denoising steps
+        label (int): class label for conditioning
+        Returns:
+            np.ndarray: generated images
+    '''
+
+    image_shape = (batch_size, 1, 28, 28)
+
+    
+
+images = sample(model=model, # trained model
+                scheduler = noise_scheduler, # use the same noise scheduler for sampling
+                batch_size = 10, # generate 10 images
+                generator = torch.manual_seed(1337), # for reproducibility
+                num_inference_steps = 200, # number of denoising steps
+                label = [0,1,2,3,4,5,6,7,8,9] # generate images of all digits
+                )
+
 
 
 
