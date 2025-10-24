@@ -125,6 +125,11 @@ def train(model: UNet2DModel,
 
             optimizer.zero_grad() # reset gradients
 
+        # print loss every epoch
+        print(f"Epoch: {epoch} Loss: {loss.item()}")
+
+
+
 # training
 train(model = model,
       train_loader = train_loader,
@@ -160,8 +165,34 @@ def sample(model: UNet2DModel,
 
     image_shape = (batch_size, 1, 28, 28)
 
-    
+    # if label is a list, convert to tensor
+    if isinstance(label,list):
+        labels = torch.tensor(label)
+    else:
+        labels = torch.full((batch_size,), label)
 
+
+    image = torch.rand(image_shape)
+
+    # set scheduler timesteps
+    scheduler.set_timesteps(num_inference_steps)
+
+    for t in tqdm(scheduler.timesteps):
+        # 1. predict noise model_output
+        model_output = model(image, t, labels).sample
+
+        # 2. compute previous image: x_t -> x_t-1
+        image = scheduler.step(model_output, t, image, generator = generator).prev_sample
+
+    image = (image/2 + 0.5).clamp(0, 1) # unnormalize the image
+    image = image.permute(0, 2, 3, 1) # BCHW -> BHWC
+
+    return image.detach().numpy() # convert to numpy array
+
+
+
+
+# Generate samples
 images = sample(model=model, # trained model
                 scheduler = noise_scheduler, # use the same noise scheduler for sampling
                 batch_size = 10, # generate 10 images
@@ -170,6 +201,13 @@ images = sample(model=model, # trained model
                 label = [0,1,2,3,4,5,6,7,8,9] # generate images of all digits
                 )
 
+
+# plot the generated images
+fig, ax = plt.subplots(2, 5)
+for i in range(10):
+    ax[i // 5, i % 5].imshow(images[i], cmap='gray') # plot in grayscale
+    ax[i // 5, i % 5].axis('off') # turn off axis
+plt.show()
 
 
 
