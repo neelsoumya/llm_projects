@@ -1,6 +1,8 @@
 '''
 Simple diffusion model implementation using Hugging Face's diffusers library.
 Acknowledgements: Adapted from [Accelerate resources](https://docs.science.ai.cam.ac.uk/diffusion-models/DDPM/6_hf_diffusers/)
+Installed via:
+   pip install -r requirements_diffusion.txt
 '''
 
 import matplotlib.pyplot as plt
@@ -136,7 +138,7 @@ train(model = model,
       optimizer = optimizer,
       noise_scheduler = noise_scheduler,
       lr_scheduler = lr_scheduler,
-      epochs = 3
+      epochs = 10
       )
              
 
