@@ -128,7 +128,7 @@ def train(model: UNet2DModel,
             optimizer.zero_grad() # reset gradients
 
         # print loss every epoch
-        print(f"Epoch: {epoch} Loss: {loss.item()}")
+        print(f"Epoch: {epoch+1} Loss: {loss.item()}")
 
 
 
