@@ -1,0 +1,6 @@
+keras-hub
+keras
+pandas
+numpy 
+matplotlib
+seaborn
