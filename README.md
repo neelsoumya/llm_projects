@@ -63,6 +63,8 @@ deactivate
 
 `diffusion_huggingface.py`: Python script to implement diffusion models for image generation using Hugging Face
 
+`sql_agent_LLM.ipynb`: Agentic framework to perform SQL queries on database and refine queries based on output.
+
 `alife_llm.py`: Digital creatures (ALIFE creatures) evolved using LLMs
 
 ![Animation](wavefront_animation.gif)
