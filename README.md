@@ -65,7 +65,12 @@ deactivate
 
 `sql_agent_LLM.ipynb`: Agentic framework to perform SQL queries on database and refine queries based on output.
 
+<!-->
 `peft_gpt2_LORA.py`: Parameter Efficient Fine Tuning (PEFT) of GPT2 model using LoRA.
+-->
+
+`PEFT_pytorch_gpt2.py`: Parameter Efficient Fine Tuning (PEFT) of GPT2 model using LoRA using PyTorch on local machine.
+
 
 `alife_llm.py`: Digital creatures (ALIFE creatures) in liquid helium evolved using LLMs
 
