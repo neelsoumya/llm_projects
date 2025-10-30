@@ -106,3 +106,84 @@ except Exception as e:
 
 print(" \n Dataset loaded \n") 
 
+# Preprocess dataset
+def tokenize_function(examples):
+    ''' Function to tokenize 
+        examples: dataset examples
+        return: tokenized examples
+    '''
+
+    if "documents" in examples:
+        texts = examples["documents"] # reddit_tifu
+    elif "text" in examples:
+        texts = examples["text"] # wikitext
+    else:
+        texts = [str(ex) for ex in examples if ex] # fallback
+
+    return tokenizer(texts, # tokenize the texts
+                     truncation = True, # truncate to max length
+                     max_length = 128, # max length
+                     padding = "max_length" # pad to max length
+                     )
+
+# tokenize the dataset
+tokenized_datasets = dataset.map(tokenize_function, # tokenize the dataset
+                                 batched = True, # batch processing
+                                 remove_columns = dataset.column_names # remove original columns
+                                 )
+print("\n Dataset tokenized. \n")
+
+# Add labels for causal language modeling
+
+# Explanation: Preparing the dataset so the Trainer / model can compute the causal-language-model loss. Concretely:
+
+#* `tokenized_dataset.map(...)` runs a function over each batch (because `batched=True`) of tokenized examples.
+#* The lambda `{"labels": examples["input_ids"]}` creates a new column called `labels` whose values are the same as the `input_ids` for each example.
+#* Hugging Face `Trainer` and the model expect a `labels` tensor for computing the loss. For causal LMs you give the model the input token ids as the targets too — the model internally shifts logits so position *t* is compared to the token at *t+1*, which implements next-token prediction.
+
+#Two important practical notes / improvements:
+
+#1. **Padding tokens should be ignored in the loss.**
+#   We used `padding="max_length"`, so the `input_ids` include pad tokens. The loss function treats labels equal to `-100` as “ignore this token”, so you should replace pad token ids in `labels` with `-100` to avoid penalising the model for padded positions.
+
+# 2. **The mapping is batched, so `examples["input_ids"]` is a list (or tensor) of sequences.** The map returns the same structure but with an added `labels` field.
+
+# A safer version that masks padding would be:
+
+#```python
+#def add_labels(examples):
+#    labels = examples["input_ids"].copy()   # batched lists
+#    # replace pad token id with -100 so loss ignores padded positions
+#    pad_id = tokenizer.pad_token_id
+#    for i, seq in enumerate(labels):
+#        labels[i] = [tok if tok != pad_id else -100 for tok in seq]
+#    return {"labels": labels}
+
+#tokenized_dataset = tokenized_dataset.map(add_labels, batched=True)
+#```
+
+#In short: that code makes the dataset include `labels = input_ids` so the causal LM can compute next-token loss; just be sure to mask padding with `-100` if you used padding.
+
+tokenized_dataset = tokenized_datasets.map(
+    lambda examples: { "labels": examples["input_ids"] }, # add labels
+    batched = True # batch processing
+)
+
+print("\n Labels added to dataset. \n")
+
+# Training arguments
+training_args = TrainingArguments(
+    output_dir = "./gpt2_lora_output", # output directory
+    num_train_epochs = 2, # number of training epochs
+    per_device_train_batch_size = 4, # batch size per device
+    gradient_accumulation_steps = 4, # gradient accumulation steps
+    learning_rate = 3e-4, # learning rate
+    logging_steps = 10, # logging steps
+    save_steps = 50, # save steps
+    fp16 = device == "cuda", # only use fp16 on CUDA
+    report_to = "none" # no reporting to wandb/tensorboard
+)
+
+# TODO: setup reporting to wandb/tensorbaord
+
+
