@@ -71,6 +71,7 @@ deactivate
 
 `PEFT_pytorch_gpt2.py`: Parameter Efficient Fine Tuning (PEFT) of GPT2 model using LoRA using PyTorch on local machine.
 
+`ai_security_evals.py`: AI security evaluations using Inspect AI framework from UK AI Security Institute (AISI).
 
 `alife_llm.py`: Digital creatures (ALIFE creatures) in liquid helium evolved using LLMs
 
