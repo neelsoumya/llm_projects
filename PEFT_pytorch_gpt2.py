@@ -214,3 +214,22 @@ prompt = "In a distant future, humanity has"
 inputs = tokenizer(prompt, 
                    return_tensors = "pt",
                    ).to(device)
+
+# Generate text
+with torch.no_grad(): # no gradient calculation
+    outputs = model.generate(
+        **inputs,
+        max_length = 50, # max length of generated text
+        num_return_sequences = 1, # number of sequences to generate
+        temperature = 0.8, # temperature for sampling
+        do_sample = True, # use sampling
+    )
+
+generated_text = tokenizer.decode(outputs[0], 
+                                  skip_special_tokens = True # skip special tokens
+                                  )
+print("\n Prompt: \n")
+print(prompt)
+print("\n Generated Text: \n")
+print(generated_text)
+print("\n End ............ \n")
