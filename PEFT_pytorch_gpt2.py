@@ -28,6 +28,7 @@ from peft import get_peft_model, LoraConfig, TaskType
 from datasets import load_dataset
 import matplotlib.pyplot as plt
 import time
+import pdb
 
 # check device
 device = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
@@ -174,7 +175,34 @@ tokenized_dataset = tokenized_datasets.map(
     batched = True # batch processing
 )
 
+print("\n Tokenized dataset columns: \n")
+
+print(tokenized_dataset.column_names) # print column names
+
+print(tokenized_dataset[0])
+
+print(tokenized_datasets['labels']) # print labels
+
+#print(examples["input_ids"]) # print input ids
+
+pdb.set_trace() # debug point
+
 print("\n Labels added to dataset. \n")
+
+# Explanation 
+#   the labels are the target token IDs the model should predict — for a causal language model they are the same as the input_ids (next-token prediction), except you usually set padding positions to -100 so the loss ignores them.
+# Labels — what they are
+# In causal language modelling (GPT-2) the task is next-token prediction.
+# You feed the model input_ids (a sequence of token ids). For training you supply labels which tell the model the correct token at each position.
+# For Hugging Face causal LMs the usual convention is labels = input_ids. The model internally shifts logits so that the logit at position t is compared to the token at t+1 (this implements next-token prediction).
+# Important: tokens that are padding should not contribute to the loss. The Trainer / loss function ignores label values equal to -100. So you should replace pad token ids in labels with -100.
+# Typical columns after preprocessing
+
+# After your tokenization and the .map(...) that adds labels, tokenized_dataset.column_names will typically include:
+# input_ids (list of token ids)
+# attention_mask
+# labels (same shape as input_ids, but with padded positions set to -100)
+
 
 # Training arguments
 training_args = TrainingArguments(
@@ -219,7 +247,7 @@ inputs = tokenizer(prompt,
 with torch.no_grad(): # no gradient calculation
     outputs = model.generate(
         **inputs,
-        max_length = 50, # max length of generated text
+        max_length = 500, # max length of generated text
         num_return_sequences = 1, # number of sequences to generate
         temperature = 0.8, # temperature for sampling
         do_sample = True, # use sampling
