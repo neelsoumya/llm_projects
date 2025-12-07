@@ -73,6 +73,10 @@ deactivate
 
 `ai_security_evals.py`: AI security evaluations using Inspect AI framework from UK AI Security Institute (AISI).
 
+`SAE_linear_probes.ipynb`: Sparse autoencoder (SAE) and linear probe
+
+[Code](https://github.com/neelsoumya/llm_projects/blob/main/SAE_linear_probes.ipynb)
+
 `alife_llm.py`: Digital creatures (ALIFE creatures) in liquid helium evolved using LLMs
 
 ![Animation](wavefront_animation.gif)
