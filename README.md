@@ -77,6 +77,10 @@ deactivate
 
 [Code](https://github.com/neelsoumya/llm_projects/blob/main/SAE_linear_probes.ipynb)
 
+`probing_opensource_LLM_ideology.py`: Probing open source LLMs for hidden ideologies
+
+[Code](https://github.com/neelsoumya/llm_projects/blob/main/probing_opensource_LLM_ideology.py)
+
 `alife_llm.py`: Digital creatures (ALIFE creatures) in liquid helium evolved using LLMs
 
 ![Animation](wavefront_animation.gif)
