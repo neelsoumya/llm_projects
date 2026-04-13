@@ -74,3 +74,6 @@ print(response)
 
 # TODO: apply for minorities grant to build voice assistant
 
+# TODO: text to speech
+# https://docs.sarvam.ai/api-reference-docs/text-to-speech/convert
+# https://docs.sarvam.ai/api-reference-docs/api-guides-tutorials/speech-to-text/overview
