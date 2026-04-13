@@ -7,7 +7,8 @@ Open source LLM projects
 * Create a `.env` file and store your OpenAI API key in it. It should have the format
 
 ```bash
-OPENAI_API_KEY = <yourkey>
+OPENAI_API_KEY = "<yourkey>"
+SARVAM_API_KEY = "<yourkey>"
 ```
 
 * Create a `.gitignore` file. It should have the following contents
@@ -44,6 +45,12 @@ python mental_health_chatbot.py
 
 python alife_llm.py
 
+python -m venv sarvam_venv
+
+source sarvam_venv/bin/activate
+
+pip install -r requirements_sarvam.txt
+
 deactivate
 ```
 
@@ -51,6 +58,8 @@ deactivate
 ## Files
 
 `.venv`: Create this file and save your OpenAI API key here. Add `.env` to your `.gitignore` file.
+
+`sarvam_voice_model.py`: A simple example of using `Sarvam` voice model.
 
 `langchain_simple.py`: A simple example of using `LangChain`
 
