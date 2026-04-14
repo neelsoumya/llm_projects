@@ -61,10 +61,13 @@ record_wav(filename="audio.wav",
            seconds=5,
            samplerate=16000)    
 
+str_mode = "translate" # or "transcribe", "verbatim", "translit", "codemix"
+
 response = client.speech_to_text.transcribe(
     file = open("audio.wav", "rb"),
-    model="saaras:v3",
-    mode="transcribe" # or "translate", "verbatim", "translit", "codemix"
+    model = "saaras:v3",
+    mode = str_mode
+    # mode="transcribe" # or "translate", "verbatim", "translit", "codemix"
 )
 
 print("Response from SarvAM API: \n")
@@ -73,6 +76,15 @@ print(response)
 # TODO: appify using streamlit or gradio or huggingface spaces
 
 # TODO: apply for minorities grant to build voice assistant
+
+# TODO: agents
+# https://dashboard.sarvam.ai/agents
+
+# TODO: chat
+# https://dashboard.sarvam.ai/chat
+# https://indus.sarvam.ai/
+
+
 # 1. Clinic intake for low-English speakers. 
 # A patient speaks in Hindi, Tamil, Bengali, etc.; 
 # Saaras v3 transcribes or translates the audio, 
