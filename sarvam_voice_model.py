@@ -1,79 +1,145 @@
-'''
-Sarvam voice model starter kit
+"""
+Sarvam voice model Streamlit app.
 
 Documentation:
 - https://docs.sarvam.ai/api-reference-docs/getting-started/quickstart
+- https://docs.sarvam.ai/api-reference-docs/api-guides-tutorials/speech-to-text/overview
 
 Installation:
-
     python -m venv sarvam_venv
-
     source sarvam_venv/bin/activate
-
     pip install -r requirements_sarvam.txt
 
 Usage:
-    python sarvam_voice_model.py
-    
-Author: Soumya Banerjee
+    streamlit run sarvam_voice_model.py
+"""
 
-'''
+from __future__ import annotations
 
-from sarvamai import SarvamAI
-import dotenv
 import os
-import logging
-import wave
-import sounddevice as sd
-import numpy as np
+import tempfile
+from typing import Any
+
+import dotenv
+import streamlit as st
+from sarvamai import SarvamAI
 
 # Load environment variables from .env file
-# CAUTION: add SARVAM_API_KEY to .env file before running this code
-# Also please add .env to .gitignore to avoid pushing your API key to github
 dotenv.load_dotenv()
-client = SarvamAI(
-    api_subscription_key=os.getenv("SARVAM_API_KEY")
-)
 
-# create wav file from mic 
-def record_wav(filename="hello.wav", seconds=5, samplerate=16000):
-    '''
-    record audio from mic and save file
-    '''
-    print(f"Recording for {seconds} seconds... speak now")
-    audio = sd.rec(
-        int(seconds * samplerate),
-        samplerate=samplerate,
-        channels=1,
-        dtype="int16",
+SUPPORTED_MODES = ["translate", "transcribe", "verbatim", "translit", "codemix"]
+SUPPORTED_TYPES = ["wav", "mp3", "m4a", "ogg", "flac", "webm"]
+
+
+@st.cache_resource
+def get_client() -> SarvamAI:
+    """Create and cache Sarvam client."""
+    api_key = os.getenv("SARVAM_API_KEY")
+    if not api_key:
+        raise ValueError(
+            "SARVAM_API_KEY is missing. Add it to your environment or .env file."
+        )
+    return SarvamAI(api_subscription_key=api_key)
+
+
+def extract_text(response: Any) -> str:
+    """Best-effort extraction of text from SDK response."""
+    if response is None:
+        return ""
+    if isinstance(response, dict):
+        for key in ["text", "transcript", "translation", "output", "result"]:
+            value = response.get(key)
+            if isinstance(value, str) and value.strip():
+                return value
+        return ""
+    for key in ["text", "transcript", "translation", "output", "result"]:
+        value = getattr(response, key, None)
+        if isinstance(value, str) and value.strip():
+            return value
+    return ""
+
+
+def main() -> None:
+    st.set_page_config(page_title="Sarvam Voice App", page_icon="🎙️", layout="centered")
+    st.title("🎙️ Sarvam Voice Model UI")
+    st.caption("Speak or upload audio and run Saaras v3 transcription/translation.")
+
+    api_key_set = bool(os.getenv("SARVAM_API_KEY"))
+    st.sidebar.header("Configuration")
+    st.sidebar.write(f"SARVAM_API_KEY detected: {'Yes' if api_key_set else 'No'}")
+    model = st.sidebar.text_input("Model", value="saaras:v3")
+    mode = st.sidebar.selectbox("Mode", SUPPORTED_MODES, index=0)
+    language_code = st.sidebar.text_input(
+        "Language code (optional)", placeholder="e.g. hi-IN"
     )
-    sd.wait()
 
-    with wave.open(filename, "wb") as wf:
-        wf.setnchannels(1)
-        wf.setsampwidth(2)  # int16 = 2 bytes
-        wf.setframerate(samplerate)
-        wf.writeframes(audio.tobytes())
+    st.subheader("1) Provide Audio")
+    uploaded_file = st.file_uploader(
+        "Upload an audio file",
+        type=SUPPORTED_TYPES,
+        help="Supported formats: wav, mp3, m4a, ogg, flac, webm",
+    )
+    recorded_audio = st.audio_input("Or record audio in browser")
 
-    print(f"Saved {filename}")
+    audio_source = recorded_audio if recorded_audio is not None else uploaded_file
+    if audio_source is not None:
+        st.audio(audio_source)
 
-record_wav(filename="audio.wav",
-           seconds=5,
-           samplerate=16000)    
+    st.subheader("2) Run Speech-to-Text")
+    if st.button("Transcribe / Translate", type="primary", use_container_width=True):
+        if audio_source is None:
+            st.error("Please upload or record audio first.")
+            return
 
-str_mode = "translate" # or "transcribe", "verbatim", "translit", "codemix"
+        try:
+            client = get_client()
+        except ValueError as exc:
+            st.error(str(exc))
+            st.stop()
 
-response = client.speech_to_text.transcribe(
-    file = open("audio.wav", "rb"),
-    model = "saaras:v3",
-    mode = str_mode
-    # mode="transcribe" # or "translate", "verbatim", "translit", "codemix"
-)
+        file_ext = os.path.splitext(audio_source.name)[1] if audio_source.name else ""
+        suffix = file_ext if file_ext else ".wav"
 
-print("Response from SarvAM API: \n")
-print(response)
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp_file:
+            tmp_file.write(audio_source.getvalue())
+            tmp_path = tmp_file.name
 
-# TODO: appify using streamlit or gradio or huggingface spaces
+        try:
+            with st.spinner("Calling Sarvam API..."):
+                with open(tmp_path, "rb") as audio_file:
+                    request_payload = {
+                        "file": audio_file,
+                        "model": model,
+                        "mode": mode,
+                    }
+                    if language_code.strip():
+                        request_payload["language_code"] = language_code.strip()
+                    response = client.speech_to_text.transcribe(**request_payload)
+
+            st.success("Done.")
+            st.subheader("Result")
+            text = extract_text(response)
+            if text:
+                st.text_area("Transcript / Translation", value=text, height=220)
+                st.download_button(
+                    "Download result as .txt",
+                    data=text,
+                    file_name="sarvam_output.txt",
+                    mime="text/plain",
+                    use_container_width=True,
+                )
+            else:
+                st.info("No plain text field found. Showing full response object.")
+            st.json(response)
+        except Exception as exc:  # pylint: disable=broad-except
+            st.error(f"Sarvam API call failed: {exc}")
+        finally:
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+
+
+if __name__ == "__main__":
+    main()
 
 # TODO: apply for minorities grant to build voice assistant
 
