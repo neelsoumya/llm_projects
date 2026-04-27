@@ -59,7 +59,7 @@ deactivate
 
 `.venv`: Create this file and save your OpenAI API key here. Add `.env` to your `.gitignore` file.
 
-`sarvam_voice_model_v1.py` and `sarvam_voice_model.py`: A simple example of using `Sarvam` voice model connected to _streamlit_.
+`sarvam_voice_model.py` and `sarvam_voice_model_v1.py`: A simple example of using `Sarvam` voice model connected to _streamlit_. A _streamlit_ app.
 
 `langchain_simple.py`: A simple example of using `LangChain`
 
