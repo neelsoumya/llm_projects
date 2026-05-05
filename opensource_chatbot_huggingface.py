@@ -6,6 +6,9 @@ from collections import Counter
 import re
 # pip install -r requirements_chatbot_huggingface.txt
 
+# deployed at
+# https://huggingface.co/spaces/neelsoumya/opensourcechatbot
+
 # ── Page config ────────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="NanoChat · LLM Playground",

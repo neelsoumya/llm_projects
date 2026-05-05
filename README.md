@@ -61,7 +61,7 @@ deactivate
 
 `sarvam_voice_model.py` and `sarvam_voice_model_v1.py`: A simple example of using `Sarvam` voice model connected to _streamlit_. A _streamlit_ app.
 
-`opensource_chatbot_huggingface.py`: Open source chatbot deployed on 🤗_huggingface_
+`opensource_chatbot_huggingface.py`: Open source chatbot deployed on [🤗_huggingface_](https://huggingface.co/spaces/neelsoumya/opensourcechatbot)
 
 `langchain_simple.py`: A simple example of using `LangChain`
 
